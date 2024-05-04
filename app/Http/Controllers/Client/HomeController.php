@@ -15,6 +15,7 @@ use App\Repositories\ProductRepository;
 use App\Services\UploadFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 use Zxing\QrReader;
 
@@ -134,11 +135,13 @@ class HomeController extends Controller
             $file = $request->file('product-qr');
             $img = UploadFile::saveImage($file, 'search');
             $data = array();
-            $qrcode = new QrReader(config('custom.urlStorage') . $img);
+            $qrcode = new QrReader('storage/' . $img);
             $text = $qrcode->text(); //return decoded text from QR Code
-            UploadFile::removeImage(config('custom.urlStorage') . $img);
+            UploadFile::removeImage('storage/' . $img);
             if ($text) {
-                $data['product'] = $product = Product::where('sku', $text)->where('active', 1)->first();
+                $route = Route::getRoutes()->match(Request::create($text));
+                $id = $route->parameter('id');
+                $data['product'] = $product = Product::where('id', $id)->where('active', 1)->first();
             }
             return $this->iRespond(true, '', $data);
         }
