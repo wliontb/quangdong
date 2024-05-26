@@ -46,6 +46,12 @@ class HomeController extends Controller
         $data['brands'] = $this->brandRp->filters([
             'status' => ActiveStatus::Active,
         ]);
+        $products = $this->productRp->filters([
+            'relation' => ['medias', 'promotions'],
+            'status' => 1,
+            'perPage' => 12,
+        ]);
+        $data['products'] = $products;
         return view('client.home.index', $data);
     }
 
