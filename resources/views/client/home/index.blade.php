@@ -54,6 +54,32 @@
                         </li>
                     </ul>
                 </div>
+                <div class="section-detail">
+                    <img src="{{ url('client/images/banner1.png') }}">
+                    <ul class="list-item clearfix">
+                    @foreach ($products as $product)
+                    <li>
+                        <a href="{{ route('product.detail', ['id' => $product->id, 'slug' => \Str::slug($product->product_name)]) }}" title="" class="thumb fl-left">
+                            <img src="{{ config('custom.urlStorage') . $product->thumb }}" alt="">
+                        </a>
+                        <div class="info fl-right">
+                            <a href="{{ route('product.detail', ['id' => $product->id, 'slug' => \Str::slug($product->product_name)]) }}" title="" class="product-name">{{ $product->product_name }}</a>
+                            <div class="price" style="background: #f12a43; color:white; border-radius: 12px">
+                                @if ($product->promotions->isNotEmpty() && $product->promotions->where('status', 1)->isNotEmpty())
+                                @php
+                                    $priceSale = (100 - $product->promotions->where('status', 1)[0]->discount) / 100 * $product->price;
+                                @endphp
+                                    <span class="new">{{ currencyFormat($priceSale) }}</span>
+                                    <span class="old">{{ currencyFormat($product->price) }}</span>
+                                @else
+                                    <span class="new">{{ currencyFormat($product->price) }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </li>
+                    @endforeach
+                    </ul>
+                </div>
             </div>
             <div class="section" id="feature-product-wp">
                 {{-- @include('product_hit') --}}
